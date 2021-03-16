@@ -2,9 +2,7 @@ from model.config.PlexPlaylistItem import PlexPlaylistItem
 
 
 class Config(object):
-    def __init__(
-        self, plex_api_token=None, plex_base_url=None, playlist_items=None
-    ) -> None:
+    def __init__(self, plex_api_token=None, plex_base_url=None, playlist_items=None):
         self.plex_api_token = plex_api_token
         self.plex_base_url = plex_base_url
         self.playlist_items = playlist_items
