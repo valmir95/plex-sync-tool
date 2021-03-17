@@ -72,7 +72,6 @@ class PlexAPIService(object):
     def get_plex_media_objs_from_external_media_objs(self, external_medias):
         plex_media_objs = []
         for external_media in external_medias:
-            print("Searching on plex for: " + external_media.get_media_name())
             plex_media = self.get_plex_media(external_media)
             if plex_media:
                 plex_media_objs.append(plex_media)
@@ -80,9 +79,8 @@ class PlexAPIService(object):
 
         return plex_media_objs
 
-    def clear_plex_playlist(self, plex_playlist):
-        for item in plex_playlist.items():
-            plex_playlist.removeItem(item)
+    def delete_plex_playlist(self, plex_playlist):
+        Playlist.delete(plex_playlist)
 
     def plex_playlist_exists(self, title):
         for playlist in self.get_connected_plex_service().playlists():
