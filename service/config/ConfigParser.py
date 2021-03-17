@@ -31,15 +31,10 @@ class ConfigParser(object):
         for playlist in parsed_toml["plex_playlist"]:
             for playlist_item in playlist["list"]:
                 plex_playlist_item = PlexPlaylistItem()
-                plex_playlist_item.set_playlist_name(
-                    playlist_item["plex_playlist_name"]
-                )
-                plex_playlist_item.set_external_list_source(
-                    playlist_item["external_list_source"]
-                )
-                plex_playlist_item.set_external_list_ids(
-                    playlist_item["external_list_ids"]
-                )
+                plex_playlist_item.set_playlist_name(playlist_item["plex_playlist_name"])
+                plex_playlist_item.set_external_list_source(playlist_item["external_list_source"])
+                plex_playlist_item.set_external_list_ids(playlist_item["external_list_ids"])
+                plex_playlist_item.set_exact_sync(playlist_item["exact_sync"])
                 plex_playlist_items.append(plex_playlist_item)
         config.set_playlist_items(plex_playlist_items)
         return config
