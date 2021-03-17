@@ -46,7 +46,6 @@ class PlexAPIService(object):
             # if movie.title == external_media.get_media_name():
             for guid in movie.guids:
                 try:
-                    print(guid.id)
                     plex_guid = PlexGuid.create_from_str(guid.id)
 
                     if plex_guid.get_source_type() == external_media.get_source_type():
