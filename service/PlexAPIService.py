@@ -3,6 +3,8 @@ from model.external_source.enum.ExternalSourceType import ExternalSourceType
 from model.plex.PlexGuid import PlexGuid
 from model.plex.PlexMediaItem import PlexMediaItem
 
+from plexapi.playlist import Playlist
+
 
 class PlexAPIService(object):
     def __init__(self, base_url, api_token):
@@ -78,5 +80,21 @@ class PlexAPIService(object):
 
         return plex_media_objs
 
-    def media_exists_in_playlist(self, title, ext, playlist):
-        pass
+    def clear_plex_playlist(self, plex_playlist):
+        for item in plex_playlist.items():
+            plex_playlist.removeItem(item)
+
+    def plex_playlist_exists(self, title):
+        for playlist in self.get_connected_plex_service().playlists():
+            if playlist.title == title:
+                return True
+        return False
+
+    def fetch_plex_playlist_by_title(self, playlist_title):
+        for playlist in self.get_connected_plex_service().playlists():
+            if playlist.title == playlist_title:
+                return playlist
+        return None
+
+    def create_playlist(self, title, items):
+        Playlist.create(self.get_connected_plex_service(), title, items)
