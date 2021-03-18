@@ -1,3 +1,3 @@
 # plex-playlist-sync
 
-A plex tool.
+A plex tool..
