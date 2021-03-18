@@ -10,7 +10,7 @@ class PlexAPIService(object):
     def __init__(self, base_url, api_token):
         self.base_url = base_url
         self.api_token = api_token
-        self.plex_service = None
+        self.plex_service = self.initiate_plex_service()
 
     def get_base_url(self):
         return self.base_url
@@ -20,7 +20,7 @@ class PlexAPIService(object):
 
     def get_connected_plex_service(self):
         if not self.plex_service:
-            self.initiate_plex_service()
+            return self.initiate_plex_service()
         return self.plex_service
 
     def set_base_url(self, base_url):
@@ -33,11 +33,13 @@ class PlexAPIService(object):
         self.plex_service = plex_service
 
     def initiate_plex_service(self):
-        self.plex_service = PlexServer(self.base_url, self.api_token)
-
-    @staticmethod
-    def parse_guid_id(guid):
-        "imdb://tt0472043"
+        try:
+            plex_service = PlexServer(self.base_url, self.api_token)
+            # As stupid as this may seem, this is seems to be the only way to "ping" the server and check if it works
+            plex_service.playlists()
+            return plex_service
+        except:
+            raise Exception("Could not connect to Plex. Check your base url and/or plex token.")
 
     # Checks if a given title with a given external id (e.g IMDB or TMDB id) exists within a playlist
     def get_plex_media(self, external_media):
