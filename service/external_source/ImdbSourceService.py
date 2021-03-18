@@ -1,4 +1,4 @@
-from service.SourceService import SourceService
+from service.external_source.SourceService import SourceService
 from bs4 import BeautifulSoup
 from model.external_source.media.ExternalSourceMedia import ExternalSourceMedia
 import requests

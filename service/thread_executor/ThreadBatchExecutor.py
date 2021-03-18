@@ -1,11 +1,11 @@
 import math
-from service.PlexAPIThread import PlexAPIThread
+from service.thread_executor.PlexAPIServiceThread import PlexAPIServiceThread
 
 
 class ThreadBatchExecutor(object):
-    def __init__(self, items, thread_class, call_class_instance, call_function) -> None:
+    def __init__(self, items, thread_class_name, call_class_instance, call_function) -> None:
         self.items = items
-        self.thread_class = thread_class
+        self.thread_class_name = thread_class_name
         self.call_class_instance = call_class_instance
         self.call_function = call_function
 
@@ -42,7 +42,14 @@ class ThreadBatchExecutor(object):
         threads = []
         result = []
         for batch in batches:
-            t_class = globals()[self.thread_class](self.call_class_instance, batch, self.call_function)
+            try:
+                t_class = globals()[self.thread_class_name](self.call_class_instance, batch, self.call_function)
+            except:
+                raise Exception(
+                    "Could not initiate/find ThreadExecutor subclass: '"
+                    + self.thread_class_name
+                    + "'. Class and/or function most likely cannot be found."
+                )
             threads.append(t_class)
             t_class.start()
 
