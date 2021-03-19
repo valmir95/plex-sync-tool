@@ -1,5 +1,5 @@
 import math
-from service.thread_executor.PlexAPIServiceThread import PlexAPIServiceThread
+from service.thread_executor.PlexAPIServiceThreadExecutor import PlexAPIServiceThreadExecutor
 
 
 class ThreadBatchExecutor(object):

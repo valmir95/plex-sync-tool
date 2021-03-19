@@ -5,8 +5,8 @@ import requests
 
 
 class TmdbSourceService(SourceService):
-    def __init__(self, external_source, config):
-        super().__init__(external_source, config)
+    def __init__(self, external_source, config, source_type):
+        super().__init__(external_source, config, source_type)
 
     def get_media_items_from_external_playlist(self, external_id):
-        raise Exception("Not implemented")
+        raise Exception("TMDB not implemented")

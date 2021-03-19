@@ -2,7 +2,7 @@ from service.thread_executor.ThreadExecutor import ThreadExecutor
 from service.plex.PlexAPIService import PlexAPIService
 
 
-class PlexAPIServiceThread(ThreadExecutor):
+class PlexAPIServiceThreadExecutor(ThreadExecutor):
     def __init__(self, call_class_instance, item_batch, call_class_function_name):
         super().__init__(call_class_instance, item_batch, call_class_function_name)
 
