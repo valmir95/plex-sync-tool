@@ -37,8 +37,11 @@ class ThreadBatchExecutor(object):
 
         return batches
 
-    def start_threads_and_receive_result(self, items_per_thread):
-        batches = self.get_batches_of_items(items_per_thread)
+    def start_threads_and_receive_result(self, batch_size=None):
+        if not batch_size:
+            batch_size = self.get_balanced_batch_size()
+        batches = self.get_batches_of_items(batch_size)
+        print("Running " + str(len(batches)) + " threads with a length of " + str(batch_size) + " items per batch")
         threads = []
         result = []
         for batch in batches:
@@ -59,37 +62,13 @@ class ThreadBatchExecutor(object):
 
         return result
 
+    def get_balanced_batch_size(self):
+        batch_size = 10
+        if len(self.items) <= 50:
+            batch_size = 2
+        elif len(self.items) > 50 and len(self.items) < 80:
+            batch_size = 6
+        elif len(self.items) > 80 and len(self.items) < 120:
+            batch_size = 8
 
-def create_threads(medias, plex_service, plex_service_function):
-    floored_count = math.floor(len(medias) / 10) * 10
-    remainder = len(medias) - floored_count
-    thread_count = int(floored_count / 10)
-    plex_api_threads = []
-    start = 0
-    end = 10
-    result = []
-    for t in range(thread_count):
-        media_batch = []
-        for i in range(start, end):
-            media_batch.append(medias[i])
-        plex_api_threads.append(PlexAPIThread(plex_service, media_batch, plex_service_function))
-        start += 10
-        end += 10
-    if remainder > 0:
-        start = int(len(medias)) - remainder
-        end = start + remainder
-        batch = []
-        for i in range(start, end):
-            batch.append(medias[i])
-        plex_api_threads.append(PlexAPIThread(plex_service, batch, plex_service_function))
-
-    for plex_thread in plex_api_threads:
-        plex_thread.start()
-
-    for plex_thread in plex_api_threads:
-        plex_thread.join()
-        result.extend(plex_thread.get_plex_media_items_result())
-
-    print("ALL THREADS FINISHED!")
-
-    return result
+        return batch_size
