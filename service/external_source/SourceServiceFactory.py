@@ -3,6 +3,7 @@ from service.external_source.ImdbSourceService import ImdbSourceService
 from service.external_source.TmdbSourceService import TmdbSourceService
 from model.external_source.ImdbExternalSource import ImdbExternalSource
 from model.external_source.TmdbExternalSource import TmdbExternalSource
+from service.external_source.SourceService import SourceService
 
 
 class SourceServiceFactory(object):
@@ -10,7 +11,7 @@ class SourceServiceFactory(object):
         self.source_type = source_type
         self.config = config
 
-    def get_source_service(self):
+    def get_source_service(self) -> SourceService:
         external_source_factory = ExternalSourceFactory(self.source_type, self.config)
         external_source = external_source_factory.get_external_source()
         source_type_str = self.source_type.value.lower()
