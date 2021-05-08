@@ -7,7 +7,7 @@ class SourceService(object):
         self.config = config
         self.source_type = source_type
 
-    def get_media_from_external_playlist(self, external_id):
+    def get_media_from_external_playlist(self, external_url):
         raise Exception("Method not implemented")
 
     def get_external_source(self):
@@ -29,10 +29,10 @@ class SourceService(object):
         self.source_type = source_type
 
     # TODO: See if we should put this somewhere else?
-    def get_plex_media_items_from_external_id(self, plex_medias, external_id):
+    def get_plex_media_items_from_external_id(self, plex_medias, external_url):
         items = []
         for plex_media in plex_medias:
-            if plex_media.get_list_id() == external_id:
+            if plex_media.get_list_url() == external_url:
                 items.append(plex_media)
 
         return items

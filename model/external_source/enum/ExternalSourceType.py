@@ -2,6 +2,7 @@ import enum
 
 
 class ExternalSourceType(enum.Enum):
-    IMDB = "imdb"
-    TMDB = "tmdb"
-    TVDB = "tvdb"
+    IMDB = "imdb.com"
+    TMDB = "tmdb.com"
+    TVDB = "tvdb.com"
+    TRAKT = "trakt.tv"

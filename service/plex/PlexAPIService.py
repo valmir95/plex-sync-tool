@@ -48,6 +48,7 @@ class PlexAPIService(object):
         tv_shows = plex_service.library.section("TV Shows")
         for movie in movies.search(external_media.get_media_name(), maxresults=10):
             # if movie.title == external_media.get_media_name():
+            # TODO: Some sources may not expose a GUID which corresponds to the ones in Plex, so an alternative for those sources is needed
             for guid in movie.guids:
                 try:
                     plex_guid = PlexGuid.create_from_str(guid.id)
@@ -56,7 +57,7 @@ class PlexAPIService(object):
                         if plex_guid.get_guid_id() == external_media.get_media_id():
                             return PlexMediaItem(
                                 movie,
-                                external_media.get_external_id(),
+                                external_media.get_external_url(),
                                 external_media.get_media_id(),
                             )
                 except Exception as e:
