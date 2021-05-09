@@ -1,10 +1,13 @@
 class ExternalSourceMedia(object):
-    def __init__(self, media_name, media_id, source_type, external_url=None, year=None) -> None:
+    def __init__(
+        self, media_name=None, media_id=None, source_type=None, external_url=None, year=None, media_type=None
+    ) -> None:
         self.media_name = media_name
         self.media_id = media_id
         self.source_type = source_type
         self.external_url = external_url
         self.year = year
+        self.media_type = media_type
 
     def get_media_name(self):
         return self.media_name
@@ -21,6 +24,9 @@ class ExternalSourceMedia(object):
     def get_year(self):
         return self.year
 
+    def get_media_type(self):
+        return self.media_type
+
     def set_media_name(self, media_name):
         self.media_name = media_name
 
@@ -35,3 +41,6 @@ class ExternalSourceMedia(object):
 
     def set_year(self, year):
         self.year = year
+
+    def set_media_type(self, media_type):
+        self.media_type = media_type

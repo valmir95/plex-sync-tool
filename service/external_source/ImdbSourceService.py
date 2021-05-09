@@ -45,7 +45,11 @@ class ImdbSourceService(SourceService):
             for movie_elem in movie_elements:
                 title = movie_elem.h3.a.text
                 imdb_id = movie_elem.div.attrs.get("data-tconst", None)
-                source_media = ExternalSourceMedia(title, imdb_id, self.source_type, list_url)
+                source_media = ExternalSourceMedia()
+                source_media.set_media_name(title)
+                source_media.set_media_id(imdb_id)
+                source_media.set_source_type(self.source_type)
+                source_media.set_external_url(list_url)
                 media_items.append(source_media)
                 media_exists = True
             page_counter += 1
@@ -62,7 +66,11 @@ class ImdbSourceService(SourceService):
         for movie_elem in movie_elements:
             title = movie_elem.find("td", class_="titleColumn").a.text
             imdb_id = movie_elem.find("td", class_="watchlistColumn").div.attrs.get("data-tconst", None)
-            source_media = ExternalSourceMedia(title, imdb_id, self.source_type, chart_url)
+            source_media = ExternalSourceMedia()
+            source_media.set_media_name(title)
+            source_media.set_media_id(imdb_id)
+            source_media.set_source_type(self.source_type)
+            source_media.set_external_url(chart_url)
             media_items.append(source_media)
         return media_items
 
@@ -85,7 +93,11 @@ class ImdbSourceService(SourceService):
             for movie_elem in movie_elements:
                 title = movie_elem.find("div", {"class": "lister-item-content"}).h3.a.text
                 imdb_id = movie_elem.find("div", {"class": "lister-top-right"}).div.attrs.get("data-tconst", None)
-                source_media = ExternalSourceMedia(title, imdb_id, self.source_type, search_url)
+                source_media = ExternalSourceMedia()
+                source_media.set_media_name(title)
+                source_media.set_media_id(imdb_id)
+                source_media.set_source_type(self.source_type)
+                source_media.set_external_url(search_url)
                 media_items.append(source_media)
                 media_exists = True
             start_count += INCREMENT_SIZE
