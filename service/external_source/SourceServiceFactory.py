@@ -2,10 +2,12 @@ from model.external_source.enum.ExternalSourceType import ExternalSourceType
 from model.external_source.ExternalSource import ExternalSource
 from model.external_source.ImdbExternalSource import ImdbExternalSource
 from model.external_source.TmdbExternalSource import TmdbExternalSource
+from model.external_source.TraktExternalSource import TraktExternalSource
 from model.external_source.ExternalSourceFactory import ExternalSourceFactory
 from service.external_source.SourceService import SourceService
 from service.external_source.ImdbSourceService import ImdbSourceService
 from service.external_source.TmdbSourceService import TmdbSourceService
+from service.external_source.TraktSourceService import TraktSourceService
 
 
 class SourceServiceFactory(object):

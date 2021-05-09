@@ -1,5 +1,6 @@
 from model.external_source.ImdbExternalSource import ImdbExternalSource
 from model.external_source.TmdbExternalSource import TmdbExternalSource
+from model.external_source.TraktExternalSource import TraktExternalSource
 
 
 class ExternalSourceFactory(object):
