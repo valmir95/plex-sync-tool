@@ -2,6 +2,8 @@ from plexapi.server import PlexServer
 from model.external_source.enum.ExternalSourceType import ExternalSourceType
 from model.plex.PlexGuid import PlexGuid
 from model.plex.PlexMediaItem import PlexMediaItem
+from model.plex.enum.ComparatorStrategy import ComparatorStrategy
+from model.shared.enum.MediaType import MediaType
 
 from plexapi.playlist import Playlist
 
@@ -42,48 +44,84 @@ class PlexAPIService(object):
             raise Exception("Could not connect to Plex. Check your base url and/or plex token.")
 
     # Checks if a given title with a given external id (e.g IMDB or TMDB id) exists within a playlist
-    def get_plex_media(self, external_media):
-        plex_service = self.get_connected_plex_service()
-        movies = plex_service.library.section("Movies")
-        tv_shows = plex_service.library.section("TV Shows")
-        for movie in movies.search(external_media.get_media_name(), maxresults=10):
-            # if movie.title == external_media.get_media_name():
-            # TODO: Some sources may not expose a GUID which corresponds to the ones in Plex, so an alternative for those sources is needed
-            for guid in movie.guids:
-                try:
-                    plex_guid = PlexGuid.create_from_str(guid.id)
-
-                    if plex_guid.get_source_type() == external_media.get_source_type():
-                        if plex_guid.get_guid_id() == external_media.get_media_id():
-                            return PlexMediaItem(
-                                movie,
-                                external_media.get_external_url(),
-                                external_media.get_media_id(),
-                            )
-                except Exception as e:
-                    print(str(e))
-
-        """ 
-        for tv_show in tv_shows.search(title):
-            if tv_show.title == title:
-                for guid in tv_show.guids:
-                    if guid == ext_id:
-                        return tv_show
-        """
+    # TODO: Make Comparator strategy an interface (base class) and implement each comparison logic as its own class inhereting from that base class
+    def get_plex_media(self, external_media, comparator_strategy):
+        section = self.get_plex_section_by_media_type(external_media.get_media_type())
+        for media in section.search(external_media.get_media_name(), maxresults=None):
+            match = None
+            if comparator_strategy == ComparatorStrategy.COMPARE_WITH_MEDIA_ID_GUID:
+                match = self.get_plex_media_compare_with_guid(media, external_media)
+            elif comparator_strategy == ComparatorStrategy.COMPARE_WITH_NAME_AND_YEAR:
+                match = self.get_plex_media_compare_with_name_and_year(media, external_media)
+            else:
+                raise Exception("No valid comparator strategy for the type of media supplied exists")
+            if match:
+                return match
         return None
 
-    def get_plex_media_objs_from_external_media_objs(self, external_medias):
+    def get_plex_media_compare_with_guid(self, media, external_media):
+        for guid in media.guids:
+            try:
+                plex_guid = PlexGuid.create_from_str(guid.id)
+
+                if plex_guid.get_source_type() == external_media.get_source_type():
+                    if plex_guid.get_guid_id() == external_media.get_media_id():
+                        return PlexMediaItem(
+                            media,
+                            external_media.get_external_url(),
+                            external_media.get_media_id(),
+                        )
+            except Exception as e:
+                print(str(e))
+
+        return None
+
+    def get_clean_title(self, title):
+        return title.split("(")[0].rstrip()
+
+    def get_plex_media_compare_with_name_and_year(self, media, external_media):
+        print(
+            "Comparing "
+            + external_media.get_media_name()
+            + "("
+            + str(external_media.get_year().year)
+            + ") "
+            + "with "
+            + self.get_clean_title(media.title)
+            + "("
+            + str(media.year)
+            + ")"
+        )
+        if self.get_clean_title(media.title) == external_media.get_media_name():
+            if external_media.get_year():
+                if media.year == external_media.get_year().year:
+                    return PlexMediaItem(media, external_media.get_external_url(), external_media.get_media_id())
+        # print("Could not match: " + media.title + " with " + external_media.get_media_name())
+        return None
+
+    def get_plex_media_objs_from_external_media_objs(self, external_medias, comparator_strategy):
         plex_media_objs = []
         for external_media in external_medias:
-            plex_media = self.get_plex_media(external_media)
+            plex_media = self.get_plex_media(external_media, comparator_strategy)
             if plex_media:
                 plex_media_objs.append(plex_media)
+            else:
+                print("Found no match for " + external_media.get_media_name())
             print("Finished search for: " + external_media.get_media_name())
 
         return plex_media_objs
 
     def delete_plex_playlist(self, plex_playlist):
         Playlist.delete(plex_playlist)
+
+    def get_plex_section_by_media_type(self, external_media_type):
+        plex_service = self.get_connected_plex_service()
+        if external_media_type == MediaType.MOVIE:
+            return plex_service.library.section("Movies")
+        elif external_media_type == MediaType.TV:
+            return plex_service.library.section("TV Shows")
+
+        raise Exception("Media has no supported media type")
 
     def plex_playlist_exists(self, title):
         for playlist in self.get_connected_plex_service().playlists():
