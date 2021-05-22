@@ -9,3 +9,10 @@ class TVRating(Enum):
     TV_PG = "TV-PG"
     TV_14 = "TV-14"
     TV_MA = "TV-MA"
+
+    @staticmethod
+    def from_str(label):
+        try:
+            return TVRating[label.replace("-", "_").replace(" ", "_")]
+        except:
+            return None
