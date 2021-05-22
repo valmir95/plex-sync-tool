@@ -3,8 +3,8 @@ from service.plex.PlexAPIService import PlexAPIService
 
 
 class PlexAPIServiceThreadExecutor(ThreadExecutor):
-    def __init__(self, call_class_instance, item_batch, call_class_function_name):
-        super().__init__(call_class_instance, item_batch, call_class_function_name)
+    def __init__(self, call_class_instance, item_batch, call_class_function_name, source_service):
+        super().__init__(call_class_instance, item_batch, call_class_function_name, source_service)
 
     def run(self):
         has_function = hasattr(PlexAPIService, self.call_class_function_name)
@@ -12,7 +12,9 @@ class PlexAPIServiceThreadExecutor(ThreadExecutor):
 
         function_exists = has_function and function_callable
         if function_exists:
-            plex_media_objs = getattr(self.call_class_instance, self.call_class_function_name)(self.item_batch)
+            plex_media_objs = getattr(self.call_class_instance, self.call_class_function_name)(
+                self.item_batch, self.source_service.get_comparator_strategy()
+            )
             self.thread_result.extend(plex_media_objs)
         else:
             raise Exception(

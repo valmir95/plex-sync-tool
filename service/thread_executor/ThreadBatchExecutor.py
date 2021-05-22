@@ -3,11 +3,12 @@ from service.thread_executor.PlexAPIServiceThreadExecutor import PlexAPIServiceT
 
 
 class ThreadBatchExecutor(object):
-    def __init__(self, items, thread_class_name, call_class_instance, call_function) -> None:
+    def __init__(self, items, thread_class_name, call_class_instance, call_function, source_service) -> None:
         self.items = items
         self.thread_class_name = thread_class_name
         self.call_class_instance = call_class_instance
         self.call_function = call_function
+        self.source_service = source_service
 
     def get_batches_of_items(self, size_per_batch):
         if size_per_batch >= len(self.items):
@@ -46,7 +47,9 @@ class ThreadBatchExecutor(object):
         result = []
         for batch in batches:
             try:
-                t_class = globals()[self.thread_class_name](self.call_class_instance, batch, self.call_function)
+                t_class = globals()[self.thread_class_name](
+                    self.call_class_instance, batch, self.call_function, self.source_service
+                )
             except:
                 raise Exception(
                     "Could not initiate/find ThreadExecutor subclass: '"
