@@ -3,12 +3,18 @@ from bs4 import BeautifulSoup
 from model.external_source.media.ExternalSourceMedia import ExternalSourceMedia
 import requests
 from util.URLUtil import URLUtil
+from model.plex.enum.ComparatorStrategy import ComparatorStrategy
+from model.shared.enum.TVRating import TVRating
+from model.shared.enum.MovieRating import MovieRating
+from model.shared.enum.MediaType import MediaType
 
 
 class ImdbSourceService(SourceService):
     def __init__(self, external_source, config, source_type):
-        super().__init__(external_source, config, source_type)
+        self.comparator_strategy = ComparatorStrategy.COMPARE_WITH_MEDIA_ID_GUID
+        super().__init__(external_source, config, source_type, self.comparator_strategy)
 
+    # TODO: No MediaType is as of now added here. We need to discern if a title is a MOVIE or TV. Important, as now this only works for movies.
     def get_media_items_from_external_playlist(self, external_url):
         source_type_val = self.get_external_source().get_source_type().value.lower()
         url_slash_split = external_url.split("/")
@@ -45,11 +51,19 @@ class ImdbSourceService(SourceService):
             for movie_elem in movie_elements:
                 title = movie_elem.h3.a.text
                 imdb_id = movie_elem.div.attrs.get("data-tconst", None)
+                certificate_rating = movie_elem.find("span", class_="certificate")
+                media_type = MediaType.MOVIE
+                if certificate_rating:
+                    certificate_rating = certificate_rating.text.upper()
+                    tv_rating = TVRating.from_str(certificate_rating)
+                    if tv_rating:
+                        media_type = MediaType.TV
                 source_media = ExternalSourceMedia()
                 source_media.set_media_name(title)
                 source_media.set_media_id(imdb_id)
                 source_media.set_source_type(self.source_type)
                 source_media.set_external_url(list_url)
+                source_media.set_media_type(media_type)
                 media_items.append(source_media)
                 media_exists = True
             page_counter += 1
@@ -57,6 +71,8 @@ class ImdbSourceService(SourceService):
         return media_items
 
     def get_media_items_from_chart(self, chart_url):
+        # This is the ONLY identifier on an IMDB chart page that determines if a title is a TV-SHOW
+        TV_LINK_MEDIA_TYPE_IDENTIFIER = "chttvm"
         media_items = []
         headers = {"Accept-Language": "en-US"}
         res = requests.get(chart_url, headers=headers)
