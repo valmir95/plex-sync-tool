@@ -6,12 +6,15 @@ import requests
 from util.URLUtil import URLUtil
 from model.shared.enum.MediaType import MediaType
 from datetime import date, datetime
+from model.plex.enum.ComparatorStrategy import ComparatorStrategy
 
 
 class TraktSourceService(SourceService):
     def __init__(self, external_source, config, source_type):
-        super().__init__(external_source, config, source_type)
+        self.comparator_strategy = ComparatorStrategy.COMPARE_WITH_NAME_AND_YEAR
+        super().__init__(external_source, config, source_type, self.comparator_strategy)
 
+    # TODO: Add the option to use the Discovery pages (e.g trending/movies). Nice to have, not must.
     def get_media_items_from_external_playlist(self, external_url):
         external_medias = []
         headers = {"Accept-Language": "en-US"}
@@ -26,9 +29,11 @@ class TraktSourceService(SourceService):
             year = self.media_element_date_string_to_datetime(year_elem)
             media_type_str = media_element.attrs.get("data-type", None)
             if media_type_str == "movie":
+                raw_title = media_element.find("meta", {"itemprop": "name"}).attrs.get("content", None)
                 title = self.get_title_movie(media_element)
                 media_type = MediaType.MOVIE
                 media_id = media_element.attrs.get("data-movie-id", None)
+                year = datetime(self.get_year_from_title(raw_title), 1, 1)
             else:
                 media_type = MediaType.TV
                 is_part_of_show = media_type_str == "season" or media_type_str == "episode"
@@ -61,6 +66,15 @@ class TraktSourceService(SourceService):
                     break
             title += title_part + " "
         return title.rstrip()
+
+    def get_year_from_title(self, title):
+        title_parts = title.split(" ")
+        title = ""
+        for title_part in title_parts:
+            if title_part.startswith("(") and title_part.endswith(")"):
+                if title_part[1:5].isnumeric():
+                    return int(title_part[1:5])
+        return None
 
     def get_title_show(self, media_element, is_part_of_show):
         if not is_part_of_show:
