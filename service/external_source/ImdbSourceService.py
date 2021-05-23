@@ -47,17 +47,11 @@ class ImdbSourceService(SourceService):
             headers = {"Accept-Language": "en-US"}
             res = requests.get(req_url, headers=headers)
             soup = BeautifulSoup(res.text, "html.parser")
-            movie_elements = soup.find_all("div", class_="lister-item mode-detail")
-            for movie_elem in movie_elements:
-                title = movie_elem.h3.a.text
-                imdb_id = movie_elem.div.attrs.get("data-tconst", None)
-                certificate_rating = movie_elem.find("span", class_="certificate")
-                media_type = MediaType.MOVIE
-                if certificate_rating:
-                    certificate_rating = certificate_rating.text.upper()
-                    tv_rating = TVRating.from_str(certificate_rating)
-                    if tv_rating:
-                        media_type = MediaType.TV
+            media_elements = soup.find_all("div", class_="lister-item mode-detail")
+            for media_elem in media_elements:
+                title = media_elem.h3.a.text
+                imdb_id = media_elem.div.attrs.get("data-tconst", None)
+                media_type = self.get_media_type_from_media_element(media_elem)
                 source_media = ExternalSourceMedia()
                 source_media.set_media_name(title)
                 source_media.set_media_id(imdb_id)
@@ -74,25 +68,32 @@ class ImdbSourceService(SourceService):
         # This is the ONLY identifier on an IMDB chart page that determines if a title is a TV-SHOW
         TV_LINK_MEDIA_TYPE_IDENTIFIER = "chttvm"
         media_items = []
-        headers = {"Accept-Language": "en-US"}
+        headers = {
+            "Accept-Language": "en-US",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36",
+        }
         res = requests.get(chart_url, headers=headers)
         soup = BeautifulSoup(res.text, "html.parser")
-        movie_elements = soup.find("tbody", class_="lister-list").find_all("tr")
+        media_elements = soup.find("tbody", class_="lister-list").find_all("tr")
         print("Scraping from chart: " + chart_url)
-        for movie_elem in movie_elements:
-            title = movie_elem.find("td", class_="titleColumn").a.text
-            imdb_id = movie_elem.find("td", class_="watchlistColumn").div.attrs.get("data-tconst", None)
+        for media_elem in media_elements:
+            title = media_elem.find("td", class_="titleColumn").a.text
+            imdb_id = media_elem.find("td", class_="watchlistColumn").div.attrs.get("data-tconst", None)
+            title_link = media_elem.find("td", class_="titleColumn").a["href"]
+            media_type = MediaType.MOVIE
+            if TV_LINK_MEDIA_TYPE_IDENTIFIER in title_link:
+                media_type = MediaType.TV
             source_media = ExternalSourceMedia()
             source_media.set_media_name(title)
             source_media.set_media_id(imdb_id)
             source_media.set_source_type(self.source_type)
             source_media.set_external_url(chart_url)
+            source_media.set_media_type(media_type)
             media_items.append(source_media)
         return media_items
 
     def get_media_items_from_search(self, search_url):
         INCREMENT_SIZE = 50
-        search_url_util = URLUtil(search_url)
         start_count = 1
         media_exists = True
         media_items = []
@@ -105,25 +106,29 @@ class ImdbSourceService(SourceService):
             headers = {"Accept-Language": "en-US"}
             res = requests.get(req_url, headers=headers)
             soup = BeautifulSoup(res.text, "html.parser")
-            movie_elements = soup.find_all("div", class_="lister-item mode-advanced")
-            for movie_elem in movie_elements:
-                title = movie_elem.find("div", {"class": "lister-item-content"}).h3.a.text
-                imdb_id = movie_elem.find("div", {"class": "lister-top-right"}).div.attrs.get("data-tconst", None)
+            media_elements = soup.find_all("div", class_="lister-item mode-advanced")
+            for media_elem in media_elements:
+                title = media_elem.find("div", {"class": "lister-item-content"}).h3.a.text
+                imdb_id = media_elem.find("div", {"class": "lister-top-right"}).div.attrs.get("data-tconst", None)
+                media_type = self.get_media_type_from_media_element(media_elem)
                 source_media = ExternalSourceMedia()
                 source_media.set_media_name(title)
                 source_media.set_media_id(imdb_id)
                 source_media.set_source_type(self.source_type)
                 source_media.set_external_url(search_url)
+                source_media.set_media_type(media_type)
                 media_items.append(source_media)
                 media_exists = True
             start_count += INCREMENT_SIZE
         return media_items
-        """
-        search_query_params = search_url_util.get_query().split("?")[0].split("&")
-        start_count = 0
-        for param in search_query_params:
-            if "start=" in param:
-                start_count = int(param.split("=")[1])
-        """
 
-        raise Exception("Search url got called on but got dunked the fuck on")
+    def get_media_type_from_media_element(self, media_element):
+        media_type = MediaType.MOVIE
+        certificate_rating = media_element.find("span", class_="certificate")
+        if certificate_rating:
+            certificate_rating = certificate_rating.text.upper()
+            tv_rating = TVRating.from_str(certificate_rating)
+            if tv_rating:
+                media_type = MediaType.TV
+
+        return media_type
