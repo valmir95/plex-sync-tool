@@ -24,7 +24,7 @@ pip3 install -r requirements.txt
 And then simply run it
 
 ```sh
-pip3 main.py
+python3 main.py
 ```
 
 After executing the script, it will run and sync the lists from _conifg.toml_.
