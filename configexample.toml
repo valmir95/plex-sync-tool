@@ -1,0 +1,33 @@
+# plex_base_url is the base url of your Plex server. The URL needs to be accessible publicly.
+# plex_api_token is the token for your Plex user where the playlists reside. Here is how you find it: https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/
+# [[plex_playlist.list]] represents ONE Plex playlist and has the following options:
+    # plex_playlist_name represents the name of the Plex playlist you want to sync your external lists to
+    # exact_sync option is if you want your plex_playlist to completely mirror the content in your external lists. This means that if you remove one of your lists, it will also be removed from the specified Plex playlist
+    # external_list_urls is a list of external list ids from external sources.
+
+
+[plex]
+    plex_base_url = "http://HOST:PORT" 
+    plex_api_token = "YOURTOKEN"
+
+[[plex_playlist]]
+    [[plex_playlist.list]]
+        plex_playlist_name = "test3"
+        exact_sync = true
+        external_list_urls = [
+            "https://www.imdb.com/list/ls092642009/"
+        ]
+
+    [[plex_playlist.list]]
+        plex_playlist_name = "test4"
+        exact_sync = true
+        external_list_urls = [
+            "https://www.imdb.com/list/ls092642009/"
+        ]
+    
+    [[plex_playlist.list]]
+        plex_playlist_name = "test5"
+        exact_sync = true
+        external_list_urls = [
+            "https://www.imdb.com/list/ls092642009/"
+        ]

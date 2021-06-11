@@ -36,7 +36,6 @@ try:
                     scraped_medias, thread_class_name, plex_service, plex_service_function, source_service
                 )
                 plex_media_objs = thread_executor.start_threads_and_receive_result()
-                # we also extend the existing media from filter is using exact_sync: plex_media_objs.extend(filtered_existing_plex_objs)
                 plex_medias.extend(plex_media_objs)
                 cached_items.extend(plex_media_objs)
 
