@@ -1,6 +1,6 @@
 # plex-tool-sync
 
-A python tool used to sync and create playlists (and **soon** collections) based on lists from various external sources. The project has been implemented in such a way that adding new external sources is quite easy. You simply implement the _SourceService_ and _ExternalSource_ classes for the desired service and model. The appropriate classes are then created on runtime based on the list urls given from _config.toml_ with the use of factory classes and methods.
+A python tool used to sync and create playlists (use of collections is being implemented) based on lists from various external sources. The project has been implemented in such a way that adding new external sources is quite easy. You simply implement the _SourceService_ and _ExternalSource_ classes for the desired service and model. The appropriate classes are then created on runtime based on the list urls given from _config.toml_ with the use of factory classes and methods.
 
 Currently the following links from external sources are available and/or worked on:
 
