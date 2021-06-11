@@ -14,7 +14,6 @@ class ImdbSourceService(SourceService):
         self.comparator_strategy = ComparatorStrategy.COMPARE_WITH_MEDIA_ID_GUID
         super().__init__(external_source, config, source_type, self.comparator_strategy)
 
-    # TODO: No MediaType is as of now added here. We need to discern if a title is a MOVIE or TV. Important, as now this only works for movies.
     def get_media_items_from_external_playlist(self, external_url):
         source_type_val = self.get_external_source().get_source_type().value.lower()
         url_slash_split = external_url.split("/")
@@ -40,7 +39,6 @@ class ImdbSourceService(SourceService):
         while media_exists:
             print("Scraping page " + str(page_counter) + " of list: " + str(list_url))
             media_exists = False
-            # req_url = self.external_source.get_base_url() + "/list/" + str(external_id) + "/"
             req_url = list_url
             if page_counter > 1:
                 req_url = req_url + "?page=" + str(page_counter)
@@ -52,6 +50,9 @@ class ImdbSourceService(SourceService):
                 title = media_elem.h3.a.text
                 imdb_id = media_elem.div.attrs.get("data-tconst", None)
                 media_type = self.get_media_type_from_media_element(media_elem)
+                year_elem = (
+                    media_elem.find("span", class_="lister-item-year").text.strip().replace("(", "").replace(")", "")
+                )
                 source_media = ExternalSourceMedia()
                 source_media.set_media_name(title)
                 source_media.set_media_id(imdb_id)
@@ -94,6 +95,7 @@ class ImdbSourceService(SourceService):
 
     def get_media_items_from_search(self, search_url):
         INCREMENT_SIZE = 50
+        RESULT_LIMIT = 1500
         start_count = 1
         media_exists = True
         media_items = []
@@ -119,6 +121,8 @@ class ImdbSourceService(SourceService):
                 source_media.set_media_type(media_type)
                 media_items.append(source_media)
                 media_exists = True
+            if start_count > RESULT_LIMIT:
+                break
             start_count += INCREMENT_SIZE
         return media_items
 
