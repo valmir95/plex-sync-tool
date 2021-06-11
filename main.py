@@ -10,7 +10,8 @@ from model.plex.PlexGuid import PlexGuid
 from model.plex.PlexMediaItem import PlexMediaItem
 
 # TODO: Replace Playlists with Collections, or have it as an advanced option in the config file.
-# Kinda important, as Playlists sucks major balls compared to Collections.
+# TODO: Split into more methods
+# TODO: Create classes and class methods for some of the functionality in main.py
 try:
     config_parser = ConfigParser("config.toml")
     config = config_parser.parse_config_file()
@@ -57,4 +58,5 @@ try:
                 )
         print(str(len(plex_medias)) + " was added and it took: " + str(time.time() - start_time))
 except Exception as e:
+    # TODO: Implement better exception handling for main methods and internal methods
     print(e)
