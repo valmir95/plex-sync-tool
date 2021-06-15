@@ -2,10 +2,9 @@ from plexapi.server import PlexServer
 from model.external_source.enum.ExternalSourceType import ExternalSourceType
 from model.plex.PlexGuid import PlexGuid
 from model.plex.PlexMediaItem import PlexMediaItem
-from model.plex.enum.ComparatorStrategy import ComparatorStrategy
 from model.shared.enum.MediaType import MediaType
-
 from plexapi.playlist import Playlist
+from plexapi.collection import Collections
 
 
 class PlexAPIService(object):
@@ -89,3 +88,6 @@ class PlexAPIService(object):
 
     def create_playlist(self, title, items):
         Playlist.create(self.get_connected_plex_service(), title, items)
+
+    def get_collection(self, title):
+        return Collections.get(self.get_connected_plex_service(), title)
