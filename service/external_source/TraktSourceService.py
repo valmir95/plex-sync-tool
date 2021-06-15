@@ -6,13 +6,18 @@ import requests
 from util.URLUtil import URLUtil
 from model.shared.enum.MediaType import MediaType
 from datetime import date, datetime
-from model.plex.enum.ComparatorStrategy import ComparatorStrategy
+from service.comparator_strategy.NameYearComparatorStrategy import NameYearComparatorStrategy
+from service.comparator_strategy.ComparatorStrategy import ComparatorStrategy
+from typing import List
 
 
 class TraktSourceService(SourceService):
     def __init__(self, external_source, config, source_type):
-        self.comparator_strategy = ComparatorStrategy.COMPARE_WITH_NAME_AND_YEAR
+        self.comparator_strategy = NameYearComparatorStrategy()
         super().__init__(external_source, config, source_type, self.comparator_strategy)
+
+    def get_allowed_comparator_strategies(self) -> List[ComparatorStrategy]:
+        return [NameYearComparatorStrategy()]
 
     # TODO: Add the option to use the Discovery pages (e.g trending/movies). Nice to have, not must.
     def get_media_from_external_playlist(self, external_url):

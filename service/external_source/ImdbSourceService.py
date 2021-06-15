@@ -3,16 +3,21 @@ from bs4 import BeautifulSoup
 from model.external_source.media.ExternalSourceMedia import ExternalSourceMedia
 import requests
 from util.URLUtil import URLUtil
-from model.plex.enum.ComparatorStrategy import ComparatorStrategy
+from service.comparator_strategy.GuidComparatorStrategy import GuidComparatorStrategy
+from service.comparator_strategy.ComparatorStrategy import ComparatorStrategy
 from model.shared.enum.TVRating import TVRating
 from model.shared.enum.MovieRating import MovieRating
 from model.shared.enum.MediaType import MediaType
+from typing import List
 
 
 class ImdbSourceService(SourceService):
     def __init__(self, external_source, config, source_type):
-        self.comparator_strategy = ComparatorStrategy.COMPARE_WITH_MEDIA_ID_GUID
+        self.comparator_strategy = GuidComparatorStrategy()
         super().__init__(external_source, config, source_type, self.comparator_strategy)
+
+    def get_allowed_comparator_strategies(self) -> List[ComparatorStrategy]:
+        return [GuidComparatorStrategy()]
 
     def get_media_from_external_playlist(self, external_url):
         source_type_val = self.get_external_source().get_source_type().value.lower()

@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from typing import List
+from service.comparator_strategy.ComparatorStrategy import ComparatorStrategy
 
 
 class SourceService(ABC):
@@ -10,6 +12,10 @@ class SourceService(ABC):
 
     @abstractmethod
     def get_media_from_external_playlist(self, external_url):
+        pass
+
+    @abstractmethod
+    def get_allowed_comparator_strategies(self) -> List[ComparatorStrategy]:
         pass
 
     def get_external_source(self):
