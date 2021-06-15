@@ -40,7 +40,7 @@ try:
                 cached_items.extend(plex_media_objs)
 
         if plex_service.plex_playlist_exists(playlist_item.get_playlist_name()):
-            plex_playlist = plex_service.fetch_plex_playlist_by_title(playlist_item.get_playlist_name())
+            plex_playlist = plex_service.fetch_playlist_by_title(playlist_item.get_playlist_name())
             if not playlist_item.get_exact_sync():
                 if len(plex_medias) > 0:
                     plex_media_items = [plex_media.get_media_item() for plex_media in plex_medias]
@@ -52,9 +52,8 @@ try:
                     plex_service.create_playlist(playlist_item.get_playlist_name(), plex_media_items)
         else:
             if len(plex_medias) > 0:
-                plex_playlist = plex_service.create_playlist(
-                    playlist_item.get_playlist_name(), [plex_media.get_media_item() for plex_media in plex_medias]
-                )
+                plex_media_items = [plex_media.get_media_item() for plex_media in plex_medias]
+                plex_playlist = plex_service.create_playlist(playlist_item.get_playlist_name(), plex_media_items)
         print(str(len(plex_medias)) + " was added and it took: " + str(time.time() - start_time))
 except Exception as e:
     # TODO: Implement better exception handling for main methods and internal methods

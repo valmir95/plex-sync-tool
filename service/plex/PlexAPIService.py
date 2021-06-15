@@ -4,7 +4,7 @@ from model.plex.PlexGuid import PlexGuid
 from model.plex.PlexMediaItem import PlexMediaItem
 from model.shared.enum.MediaType import MediaType
 from plexapi.playlist import Playlist
-from plexapi.collection import Collections
+from plexapi.collection import Collection
 
 
 class PlexAPIService(object):
@@ -80,14 +80,21 @@ class PlexAPIService(object):
                 return True
         return False
 
-    def fetch_plex_playlist_by_title(self, playlist_title):
+    def fetch_playlist_by_title(self, playlist_title):
         for playlist in self.get_connected_plex_service().playlists():
             if playlist.title == playlist_title:
                 return playlist
         return None
 
     def create_playlist(self, title, items):
-        Playlist.create(self.get_connected_plex_service(), title, items)
+        Playlist.create(self.get_connected_plex_service(), title, None, items)
 
-    def get_collection(self, title):
-        return Collections.get(self.get_connected_plex_service(), title)
+    def fetch_collection_by_title(self, title):
+        collections = self.get_connected_plex_service().library.search(title=title, libtype="collection")
+        for collection in collections:
+            if collection.title.lower() == title.lower():
+                return collection
+        return None
+
+    def create_collection(self, title, section, items):
+        Collection.create(self.get_connected_plex_service(), title, section, items)
