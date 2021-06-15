@@ -15,7 +15,7 @@ class TraktSourceService(SourceService):
         super().__init__(external_source, config, source_type, self.comparator_strategy)
 
     # TODO: Add the option to use the Discovery pages (e.g trending/movies). Nice to have, not must.
-    def get_media_items_from_external_playlist(self, external_url):
+    def get_media_from_external_playlist(self, external_url):
         external_medias = []
         headers = {"Accept-Language": "en-US"}
         res = requests.get(external_url, headers=headers)

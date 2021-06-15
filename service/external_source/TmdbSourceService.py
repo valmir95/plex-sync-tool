@@ -9,5 +9,5 @@ class TmdbSourceService(SourceService):
         self.comparator_strategy = None
         super().__init__(external_source, config, source_type, self.comparator_strategy)
 
-    def get_media_items_from_external_playlist(self, external_url):
+    def get_media_from_external_playlist(self, external_url):
         raise Exception("TMDB not implemented")

@@ -1,9 +1,6 @@
 import threading
 
 
-import threading
-
-
 class ThreadExecutor(threading.Thread):
     def __init__(self, call_class_instance, item_batch, call_class_function_name, source_service) -> None:
         threading.Thread.__init__(self)

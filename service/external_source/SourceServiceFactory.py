@@ -16,7 +16,7 @@ class SourceServiceFactory(object):
 
     def get_source_service_from_url(self, url) -> SourceService:
         source_type = self.get_source_type_from_url(url)
-        external_source_factory = ExternalSourceFactory(source_type, self.config)
+        external_source_factory = ExternalSourceFactory(source_type)
         external_source = external_source_factory.get_external_source()
         source_type_str = source_type.value.lower().split(".")[0]
         source_service_class_name = source_type_str.capitalize() + "SourceService"

@@ -14,7 +14,7 @@ class ImdbSourceService(SourceService):
         self.comparator_strategy = ComparatorStrategy.COMPARE_WITH_MEDIA_ID_GUID
         super().__init__(external_source, config, source_type, self.comparator_strategy)
 
-    def get_media_items_from_external_playlist(self, external_url):
+    def get_media_from_external_playlist(self, external_url):
         source_type_val = self.get_external_source().get_source_type().value.lower()
         url_slash_split = external_url.split("/")
         is_valid_service = False

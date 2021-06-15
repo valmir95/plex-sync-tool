@@ -1,12 +1,13 @@
 from model.external_source.ExternalSource import ExternalSource
 from model.external_source.enum.ExternalSourceType import ExternalSourceType
+from model.external_source.enum.ExternalSourceUrl import ExternalSourceUrl
 
 
 class ImdbExternalSource(ExternalSource):
-    def __init__(self, api_source=None) -> None:
-        self.base_url = "https://www.imdb.com/"
+    def __init__(self) -> None:
+        self.base_url = ExternalSourceUrl.IMDB
         self.source_type = ExternalSourceType.IMDB
-        super().__init__(self.base_url, api_source, self.source_type)
+        super().__init__(self.base_url, self.source_type)
 
     def get_id_from_guid(self, guid):
         raise Exception("Method not implemented")

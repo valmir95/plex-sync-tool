@@ -1,15 +1,16 @@
-from model.plex.PlexMediaItem import PlexMediaItem
+from abc import ABC, abstractmethod
 
 
-class SourceService(object):
+class SourceService(ABC):
     def __init__(self, external_source, config, source_type, comparator_strategy):
         self.external_source = external_source
         self.config = config
         self.source_type = source_type
         self.comparator_strategy = comparator_strategy
 
+    @abstractmethod
     def get_media_from_external_playlist(self, external_url):
-        raise Exception("Method not implemented")
+        pass
 
     def get_external_source(self):
         return self.external_source

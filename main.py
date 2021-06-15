@@ -29,7 +29,7 @@ try:
                 plex_medias.extend(temp_cached)
                 print("List url: " + str(playlist_url) + " is already cached, so adding directly...")
             else:
-                scraped_medias = source_service.get_media_items_from_external_playlist(playlist_url)
+                scraped_medias = source_service.get_media_from_external_playlist(playlist_url)
                 plex_service_function = plex_service.get_plex_media_objs_from_external_media_objs.__name__
                 thread_class_name = PlexAPIServiceThreadExecutor.__name__
                 thread_executor = ThreadBatchExecutor(
