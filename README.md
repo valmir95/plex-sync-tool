@@ -12,7 +12,7 @@ Currently the following links from external sources are available and/or worked 
 
 First, you need to create a config file with your playlists/collections with their list urls and your Plex server info. It needs to be called _config.toml_. Take a look at _configexample.toml_ for usage example and descriptions
 
-Minimum Python version: 3.8 (based on [vermin](http://ace.ajax.org))
+Minimum Python version: 3.8 (based on [vermin](https://pypi.org/project/vermin/))
 
 Developed using Python version: 3.9.2
 
